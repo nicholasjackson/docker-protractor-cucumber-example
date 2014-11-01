@@ -1,29 +1,68 @@
 task :up do
-  sh 'vagrant up'
+  sh 'boot2docker up'
 end
 
-task :destroy do
-  sh 'vagrant destroy -f'
+task :halt do
+  sh 'boot2docker halt'
 end
 
 task :setup do |t, args|
-  sh "DOCKER_HOST=tcp://127.0.0.1:2375 docker run --user swuser -it --rm -w / -p 8080:8080 -v /vagrant/data:/src njackson/nodetest ls -las"
-  sh "DOCKER_HOST=tcp://127.0.0.1:2375 docker run --user swuser -it --rm -w /src -p 8080:8080 -v /vagrant/data:/src njackson/nodetest bower install"
-  sh "DOCKER_HOST=tcp://127.0.0.1:2375 docker run -it --rm -w /src -p 8080:8080 -v /vagrant/data:/src njackson/nodetest npm install"
+  Dir.mkdir("./gems") unless Dir.exists?("./gems")
+
+  sh "#{docker_command('-w /src')} bundle"
+  sh "#{docker_command('-w /src/protractor')} npm install"
+  sh "#{docker_command('-w /src/protractor --user swuser')} bower install"
+  sh "#{docker_command('-w /src/protractor')} ./node_modules/protractor/bin/webdriver-manager update"
 end
 
 task :run do |t, args|
-  sh "DOCKER_HOST=tcp://127.0.0.1:2375 docker run -it --rm -w /src -p 8080:8080 -p 35729:35729 -v /vagrant/data:/src njackson/nodetest grunt serve --force"
+  sh "#{docker_command('-w /src')} rake docker:protractor"
 end
 
-task :e2e do |t, args|
-  sh "DOCKER_HOST=tcp://127.0.0.1:2375 docker run -it --rm -w /src -p 8080:8080 -p 35729:35729 -v /vagrant/data:/src njackson/nodetest grunt e2e"
+task :bash do |t, args|
+  sh "#{docker_command('-w /src')} /bin/bash"
 end
 
-task :build do |t, args|
-  sh "DOCKER_HOST=tcp://127.0.0.1:2375 docker build --rm -t njackson/nodetest ./dockerfile/node"
+namespace :docker do
+  task :cucumber do
+    #clear_cookies
+    start_selenium
+    Dir.chdir("./ruby") do
+      sh "cucumber"
+    end
+  end
+
+  task :protractor do
+    clear_cookies
+    start_selenium
+    Dir.chdir("./ruby") do
+      sh "cucumber"
+    end
+    Dir.chdir("./protractor") do
+      sh "grunt protractor"
+    end
+  end
+
+  def start_selenium
+    sh "java -jar /src/protractor/node_modules/protractor/selenium/selenium-server-standalone-2.43.1.jar &"
+    sleep 2
+  end
+
+  def clear_cookies
+    cookie_file = './phantom_cookies.txt'
+    FileUtils.rm cookie_file if File.exists? cookie_file
+  end
 end
 
-task :ssh do
-  sh 'ssh docker@127.0.0.1 -p 2222 -i ~/.vagrant.d/insecure_private_key -o StrictHostKeyChecking=no'
+def docker_command(args)
+  <<-eos
+    boot2docker ssh docker run \\
+    --name devserver \\
+    -it --rm \\
+    -e GEM_HOME=/src/gems \\
+    -e PATH=$PATH:/src/gems/bin:/src/protractor/node_modules/karma-phantomjs-launcher/node_modules/phantomjs/bin \
+    -v $(pwd):/src \\
+    #{args} \\
+    nicholasjackson/docker-devserver:develop \\
+  eos
 end
