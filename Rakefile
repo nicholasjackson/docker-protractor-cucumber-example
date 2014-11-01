@@ -44,7 +44,7 @@ namespace :docker do
   end
 
   def start_selenium
-    sh "java -jar /src/protractor/node_modules/protractor/selenium/selenium-server-standalone-2.43.1.jar &"
+    sh "java -jar ./protractor/node_modules/protractor/selenium/selenium-server-standalone-2.43.1.jar &"
     sleep 2
   end
 

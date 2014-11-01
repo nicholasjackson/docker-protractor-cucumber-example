@@ -15,8 +15,10 @@ module.exports = function() {
 
   this.Given(/^I go on "([^"]*)"$/, function (url, callback) {
     browser.ignoreSynchronization = true;
-    browser.get('http://www.marksandspencer.com');
-    callback()
+    browser.manage().timeouts().pageLoadTimeout(40000);
+    browser.manage().timeouts().implicitlyWait(10000);
+    browser.get('https://www.marksandspencer.com/webapp/wcs/stores/servlet/MSMyAccountView');
+    callback();
   });
 
   this.Then(/^the title should equal "([^"]*)"$/, function (title, callback) {
@@ -29,20 +31,7 @@ module.exports = function() {
 
       stream.write(new Buffer(png, 'base64'));
       stream.end();
-      callback();
-    });
-  });
-
-  this.Then(/^the menu should contain "([^"]*)"$/, function (item, callback) {
-    element.all(by.css('.account-info')).then(function(elements) {
-        browser.takeScreenshot().then(function (png) {
-          var stream = fs.createWriteStream("./screenshots/homepage2.jpg");
-
-          stream.write(new Buffer(png, 'base64'));
-          stream.end();
-          expect(elements).to.have.length(1);
-          callback();
-        });
+      return callback();
     });
   });
 }

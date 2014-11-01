@@ -5,6 +5,5 @@ Feature: Running Cucumber with Protractor
 
   Scenario: Wrapping WebDriver
     Given I go on "index.html"
-    Then i take a screenshot "./screenshots/homepage.png"
-    Then the title should equal "Welcome to Marks & Spencer"
-    And the menu should contain "YOUR ACCOUNT"
+    Then i take a screenshot "./screenshots/myaccount.png"
+    Then the title should equal "My Account"

@@ -7,8 +7,9 @@ exports.config = {
   ],
   capabilities: {
     'browserName': 'phantomjs',
-    'phantomjs.binary.path': 'protractor/node_modules/karma-phantomjs-launcher/node_modules/phantomjs/bin/phantomjs',
-    'phantomjs.cli.args': ['--cookies-file=/src/phantom_cookies.txt']
+    'phantomjs.binary.path': '/usr/local/bin/phantomjs',
+    'phantomjs.cli.args': ['--cookies-file=/Users/njackson/Documents/Code/Work/docker-protractor-cucumber-example/phantom_cookies.txt'],
+    'phantomjs.ghostdriver.cli.args': ['--cookies-file=/Users/njackson/Documents/Code/Work/docker-protractor-cucumber-example/phantom_cookies.txt']
   },
   cucumberOpts: {
     require: 'features/steps/*_steps.js',
