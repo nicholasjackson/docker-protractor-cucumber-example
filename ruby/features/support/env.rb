@@ -5,7 +5,7 @@ require 'capybara/poltergeist'
 
 Capybara.register_driver :poltergeist do |app|
   puts "start driver"
-  Capybara::Poltergeist::Driver.new(app, {:phantomjs_options => ['--cookies-file=../phantom_cookies.txt']})
+  Capybara::Poltergeist::Driver.new(app, {:phantomjs_options => ['--cookies-file=/src/phantom_cookies.txt']})
 end
 
 Capybara.run_server = false

@@ -16,7 +16,7 @@ task :setup do |t, args|
 end
 
 task :run do |t, args|
-  sh "#{docker_command('-w /src')} rake docker:protractor"
+  sh "#{docker_command('-w /src')} rake docker:linked_run"
 end
 
 task :bash do |t, args|
@@ -25,7 +25,7 @@ end
 
 namespace :docker do
   task :cucumber do
-    #clear_cookies
+    clear_cookies
     start_selenium
     Dir.chdir("./ruby") do
       sh "cucumber"
@@ -33,6 +33,14 @@ namespace :docker do
   end
 
   task :protractor do
+    clear_cookies
+    start_selenium
+    Dir.chdir("./protractor") do
+      sh "grunt protractor"
+    end
+  end
+
+  task :linked_run do
     clear_cookies
     start_selenium
     Dir.chdir("./ruby") do
