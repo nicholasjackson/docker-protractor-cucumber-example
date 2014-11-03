@@ -44,10 +44,10 @@ namespace :docker do
     clear_cookies
     start_selenium
     Dir.chdir("./ruby") do
-      sh "cucumber"
+      sh "cucumber --tags @login"
     end
     Dir.chdir("./protractor") do
-      sh "grunt protractor"
+      sh "./node_modules/protractor/bin/protractor protractor-conf.js --cucumberOpts.tags=\"@myaccount\""
     end
   end
 

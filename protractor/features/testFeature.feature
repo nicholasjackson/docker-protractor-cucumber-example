@@ -3,7 +3,8 @@ Feature: Running Cucumber with Protractor
   I should be able to use Cucumber
   to run my E2E tests
 
-  Scenario: Wrapping WebDriver
+  @myaccount
+  Scenario: Load My Account
     Given I go on "index.html"
     Then i take a screenshot "./screenshots/myaccount.png"
     Then the title should equal "My Account"

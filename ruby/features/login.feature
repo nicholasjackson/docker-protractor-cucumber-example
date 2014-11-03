@@ -3,6 +3,7 @@ Feature: Login
   A visitor
   Should log into the website
 
+  @login
   Scenario:
     Given I am on the home page
     And I take a screenshot "./screenshots/homepage.png"
